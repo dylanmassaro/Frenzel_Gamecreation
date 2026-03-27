@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MGSC 310 — Game Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A10;
+  --surface: #12121C;
+  --surface2: #1A1A28;
+  --surface3: #222234;
+  --text: #ECEDF4;
+  --text-muted: #9394A8;
+  --text-dim: #62637A;
+  --gold: #D4A04A;
+  --red: #E85A5A;
+  --blue: #5B8DEF;
+  --teal: #2DD4A8;
+  --amber: #F5A623;
+  --pink: #D46BA8;
+  --purple: #7B61FF;
+  --green: #4ADE80;
+  --coral: #E8593C;
+  --border: rgba(255,255,255,0.06);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* NAV */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 32px;
+  background: rgba(10,10,16,0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-left { display: flex; align-items: center; gap: 16px; }
+.nav-title { font-weight: 700; font-size: 14px; }
+.nav-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+  border: 1px solid;
+}
+.nav-center { display: flex; gap: 4px; }
+.nav-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--surface3);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.nav-dot.active { background: var(--gold); width: 24px; border-radius: 4px; }
+.nav-dot.pirate.active { background: var(--gold); }
+.nav-dot.restaurant.active { background: var(--coral); }
+.nav-dot.festival.active { background: var(--amber); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-counter {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.nav-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.nav-btn:hover { background: var(--surface2); color: var(--text); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+/* SLIDES */
+.slides-container {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+}
+.slide {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 48px 32px;
+  opacity: 0;
+  transform: translateX(60px);
+  pointer-events: none;
+  transition: opacity 0.5s, transform 0.5s;
+  overflow-y: auto;
+}
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.slide-inner {
+  max-width: 960px;
+  width: 100%;
+}
+
+/* TYPOGRAPHY */
+.slide h1 {
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+.slide h2 {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+.slide h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.slide .subtitle {
+  font-size: 18px;
+  color: var(--text-muted);
+  max-width: 640px;
+  margin-bottom: 32px;
+}
+.label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* GRIDS */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+
+/* CARDS */
+.c {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+.c:hover { border-color: rgba(255,255,255,0.1); }
+.c h3 { font-size: 15px; margin-bottom: 5px; }
+.c p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.c-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  padding: 2px 7px;
+  border-radius: 5px;
+  margin-top: 8px;
+}
+
+/* STAT CARDS */
+.stat { text-align: center; padding: 16px; }
+.stat .num {
+  font-family: 'Space Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+}
+.stat .slabel { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* LOOP TRACK */
+.loop {
+  display: flex; gap: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin: 20px 0 14px;
+}
+.loop-s {
+  flex: 1;
+  padding: 18px 12px;
+  text-align: center;
+  position: relative;
+}
+.loop-s::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 20%; height: 60%;
+  width: 1px;
+  background: var(--border);
+}
+.loop-s:last-child::after { display: none; }
+.loop-s .sn { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); }
+.loop-s h4 { font-size: 14px; font-weight: 600; margin: 4px 0; }
+.loop-s .tm { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; }
+.loop-s p { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+/* VARIABLES TABLE */
+.var-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 12px 0;
+}
+.var-table th {
+  text-align: left;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.var-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.var-table td:first-child { color: var(--text); font-weight: 500; }
+
+/* HERO GLOW */
+.glow {
+  position: absolute;
+  top: -100px; left: 50%; transform: translateX(-50%);
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+/* COLOR UTILS */
+.t-gold { color: var(--gold); }
+.t-red { color: var(--red); }
+.t-blue { color: var(--blue); }
+.t-teal { color: var(--teal); }
+.t-amber { color: var(--amber); }
+.t-pink { color: var(--pink); }
+.t-purple { color: var(--purple); }
+.t-green { color: var(--green); }
+.t-coral { color: var(--coral); }
+.bg-gold { background: rgba(212,160,74,0.12); color: var(--gold); }
+.bg-red { background: rgba(232,90,90,0.12); color: var(--red); }
+.bg-blue { background: rgba(91,141,239,0.12); color: var(--blue); }
+.bg-teal { background: rgba(45,212,168,0.12); color: var(--teal); }
+.bg-amber { background: rgba(245,166,35,0.12); color: var(--amber); }
+.bg-pink { background: rgba(212,107,168,0.12); color: var(--pink); }
+.bg-purple { background: rgba(123,97,255,0.12); color: var(--purple); }
+.bg-coral { background: rgba(232,89,60,0.12); color: var(--coral); }
+.bg-green { background: rgba(74,222,128,0.12); color: var(--green); }
+.b-gold { border-color: rgba(212,160,74,0.25) !important; }
+.b-coral { border-color: rgba(232,89,60,0.25) !important; }
+.b-amber { border-color: rgba(245,166,35,0.25) !important; }
+.b-teal { border-color: rgba(45,212,168,0.25) !important; }
+
+.mono { font-family: 'Space Mono', monospace; }
+
+/* DIVIDER BADGE */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+}
+.section-divider::before, .section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.section-divider span {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* Interaction term callout */
+.interaction-callout {
+  background: var(--surface2);
+  border-left: 3px solid;
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 12px;
+}
+.interaction-callout strong { font-size: 13px; display: block; margin-bottom: 4px; }
+.interaction-callout .formula {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  margin-top: 6px;
+  opacity: 0.7;
+}
+
+/* Key takeaway */
+.key {
+  text-align: center;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .slide { padding: 72px 20px 20px; }
+  .slide h1 { font-size: 32px; }
+  .slide h2 { font-size: 24px; }
+  .g2, .g3, .g4 { grid-template-columns: 1fr; }
+  .loop { flex-direction: column; }
+  .loop-s::after { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-left">
+    <span class="nav-title">MGSC 310 — Game Concepts</span>
+  </div>
+  <div class="nav-center" id="dots"></div>
+  <div class="nav-right">
+    <span class="nav-counter" id="counter">1 / 14</span>
+    <button class="nav-btn" id="prev" onclick="go(-1)">Prev</button>
+    <button class="nav-btn" id="next" onclick="go(1)">Next</button>
+  </div>
+</nav>
+
+<div class="slides-container" id="deck">
+
+<!-- ============================== -->
+<!-- SLIDE 0: TITLE -->
+<!-- ============================== -->
+<div class="slide" data-group="title">
+  <div class="slide-inner" style="text-align:center; position:relative;">
+    <div class="glow" style="background:radial-gradient(circle, rgba(212,160,74,0.3), transparent 70%);"></div>
+    <div class="label t-gold" style="margin-bottom:24px;">MGSC 310 — Prof. Frenzel — Chapman University</div>
+    <h1 style="background:linear-gradient(135deg,var(--text),var(--gold) 50%,var(--coral));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">3 Game Concepts</h1>
+    <p class="subtitle" style="margin:16px auto 40px;max-width:520px;">Competitive, data-driven classroom simulations for 30+ simultaneous players. Each game is built around a predictive model, live competition, and AI-driven curveballs.</p>
+    <div class="g3" style="max-width:640px;margin:0 auto;">
+      <div class="c stat b-gold" style="cursor:pointer;" onclick="goTo(1)">
+        <div class="num t-gold">1</div>
+        <div class="slabel">Pirate Battleship</div>
+      </div>
+      <div class="c stat b-coral" style="cursor:pointer;" onclick="goTo(5)">
+        <div class="num t-coral">2</div>
+        <div class="slabel">Restaurant Wars</div>
+      </div>
+      <div class="c stat b-amber" style="cursor:pointer;" onclick="goTo(9)">
+        <div class="num t-amber">3</div>
+        <div class="slabel">Festival Frenzy</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 1: PIRATE — OVERVIEW -->
+<!-- ============================== -->
+<div class="slide" data-group="pirate">
+  <div class="slide-inner" style="position:relative;">
+    <div class="glow" style="background:radial-gradient(circle, rgba(212,160,74,0.25), transparent 70%);"></div>
+    <div class="label t-gold">Concept 1</div>
+    <h2>Pirate Battleship</h2>
+    <p class="subtitle">Build a ship, hire a crew, explore islands, raid other players. 3 predictive models determine every outcome. 30+ players start in the same sea.</p>
+    <div class="g4">
+      <div class="c stat"><div class="num t-gold">30+</div><div class="slabel">Players</div></div>
+      <div class="c stat"><div class="num t-gold">~35</div><div class="slabel">Min to play</div></div>
+      <div class="c stat"><div class="num t-gold">X</div><div class="slabel">Rounds</div></div>
+      <div class="c stat"><div class="num t-gold">3</div><div class="slabel">AI models</div></div>
+    </div>
+    <div class="g2">
+      <div class="c">
+        <div class="c-icon bg-gold">D</div>
+        <h3>Dataset-Driven</h3>
+        <p>Professor provides a naval dataset. Players study it to understand which crew compositions, tech levels, and artillery loadouts produce the best outcomes. Data-driven decisions on compass upgrades, crew upgrades, and ship builds.</p>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-red">3</div>
+        <h3>3 Predictive Models</h3>
+        <p><strong class="t-red">Combat:</strong> crew stats → win probability. <strong class="t-blue">Navigation:</strong> tech + crew → route success. <strong class="t-gold">Loot Discovery:</strong> explorer + maps → treasure yield. All regression-based on the provided dataset.</p>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="c">
+        <div class="c-icon bg-teal">S</div>
+        <h3>Same Starting Point</h3>
+        <p>All 30+ players start in the same sea. No region selection — everyone begins equal. Battling is disabled in Round 1, giving players time to build before PvP opens up. The map expands as players invest in navigators and maps.</p>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-pink">C</div>
+        <h3>PvE + PvP Choice</h3>
+        <p>Each turn, players choose: explore an island (PvE) or attack another player (PvP). If 2+ players go to the same island, they all fight — creating emergent conflict even among explorers. Ships never fully sink — they're damaged and must be repaired.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 2: PIRATE — SHIP BUILDING -->
+<!-- ============================== -->
+<div class="slide" data-group="pirate">
+  <div class="slide-inner">
+    <div class="label t-gold">Pirate Battleship</div>
+    <h2>Ship Building — Crew, Tech &amp; Arsenal</h2>
+    <p class="subtitle">Spend loot to hire crew, buy tech, equip weapons, and stock food. Every hire modifies numerical stat variables that feed directly into the 3 predictive models.</p>
+
+    <div class="section-divider"><span>Crew — Numerical Variables</span></div>
+    <div class="g3">
+      <div class="c">
+        <div class="c-icon bg-blue">Q</div>
+        <h3>Quartermaster</h3>
+        <p>Manages food/water. Boosts crew health capacity and agility. Essential for surviving longer battles.</p>
+        <tag class="tag bg-blue">Crew</tag>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-blue">S</div>
+        <h3>Sailing Master</h3>
+        <p>Navigation and piloting. Makes routes faster. Required before buying Maps. Feeds Navigation Model directly.</p>
+        <tag class="tag bg-blue">Crew</tag>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-blue">E</div>
+        <h3>Explorer</h3>
+        <p>Expands map visibility — unlocks new islands. Need navigators to expand your map. Feeds Loot Discovery Model.</p>
+        <tag class="tag bg-blue">Crew</tag>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-red">G</div>
+        <h3>Gunner</h3>
+        <p>Mans 1 cannon. More gunners = more firepower. Max 5 (1 per cannon). Feeds Combat Model directly.</p>
+        <tag class="tag bg-red">Combat</tag>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-red">P</div>
+        <h3>Powder Monkey</h3>
+        <p>Assists gunner — boosts cannon reload speed. Each cannon needs 1 Gunner + 1 Powder Monkey for full DPS.</p>
+        <tag class="tag bg-red">Combat</tag>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-teal">D</div>
+        <h3>Doctor</h3>
+        <p>Heals injured crew between rounds. Without one, injuries compound. Critical for sustained multi-round play.</p>
+        <tag class="tag bg-teal">Support</tag>
+      </div>
+    </div>
+    <div class="g3">
+      <div class="c">
+        <div class="c-icon bg-green">B</div>
+        <h3>Ship Builder</h3>
+        <p>Repairs hull damage between rounds. Ships never fully sink, but an unrepaired hull reduces all stat outputs. Without a builder, cumulative damage cripples your ship by late rounds.</p>
+        <tag class="tag bg-green">Repair</tag>
+      </div>
+      <div class="c" style="border-color:rgba(245,166,35,0.2);">
+        <div class="c-icon bg-amber">F</div>
+        <h3>Food Supply</h3>
+        <p>A purchasable feature that links directly to crew morale. Low food = low morale = mutiny risk (AI curveball). Higher food investment buffs crew stats slightly and prevents morale penalties.</p>
+        <tag class="tag bg-amber">Morale</tag>
+      </div>
+      <div class="c" style="border-color:rgba(232,90,90,0.2);">
+        <div class="c-icon bg-red">W</div>
+        <h3>Weapons — Upgradeable</h3>
+        <p><strong class="t-red">Swords:</strong> 1 per crew, upgradeable tiers (rusty → steel → enchanted). <strong class="t-red">Cannons:</strong> max 5, upgradeable (iron → bronze → gold). Higher tiers = higher damage coefficients in the Combat Model.</p>
+        <tag class="tag bg-red">Arsenal</tag>
+      </div>
+    </div>
+
+    <div class="section-divider"><span>Technology — Upgradeable</span></div>
+    <div class="g4">
+      <div class="c">
+        <h3 class="t-pink">Compass</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Reduces failed trips. Data-driven upgrade — dataset reveals diminishing returns at top tiers.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-pink">Maps</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Unlocks new island zones. Requires Sailing Master. Better maps = richer loot via Loot Discovery Model.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-pink">Sails</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Speed + maneuverability. Faster sails = reach islands first. Also affects escape probability in PvP.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-pink">Boat Type</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Hull durability, cargo cap, crew limit. Classic speed vs. tankiness tradeoff. Feeds Combat Model.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 3: PIRATE — GAME LOOP -->
+<!-- ============================== -->
+<div class="slide" data-group="pirate">
+  <div class="slide-inner">
+    <div class="label t-gold">Pirate Battleship</div>
+    <h2>Gameplay Loop &amp; Mechanics</h2>
+    <p class="subtitle">X rounds of play. Every round: build → navigate → explore or battle → collect loot → repeat. All 30 players act simultaneously. Battling disabled Round 1.</p>
+
+    <div class="loop">
+      <div class="loop-s" style="background:rgba(91,141,239,0.06);">
+        <div class="sn">STEP 1</div>
+        <div class="tm t-blue">3:00</div>
+        <h4>Build / Edit Ship</h4>
+        <p>Hire crew, upgrade tech & weapons, buy food. Doctor heals, Ship Builder repairs hull. Every night between rounds.</p>
+      </div>
+      <div class="loop-s" style="background:rgba(45,212,168,0.06);">
+        <div class="sn">STEP 2</div>
+        <div class="tm t-teal">1:00</div>
+        <h4>Navigate</h4>
+        <p>Choose: island (PvE) or player ship (PvP). Nav Model determines success. Failed routes waste the turn.</p>
+      </div>
+      <div class="loop-s" style="background:rgba(232,90,90,0.06);">
+        <div class="sn">STEP 3</div>
+        <div class="tm t-red">2:00</div>
+        <h4>Explore / Battle</h4>
+        <p>PvE: Loot Model → treasure. PvP: Combat Model → winner takes loot. 2+ at same island = fight. AI curveballs fire.</p>
+      </div>
+      <div class="loop-s" style="background:rgba(212,160,74,0.06);">
+        <div class="sn">STEP 4</div>
+        <div class="tm t-gold">2:00</div>
+        <h4>Collect / Review</h4>
+        <p>Loot tallied. Leaderboard updates. Combat logs. Damage reports. Plan next round's investments.</p>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="c">
+        <h3>Key Mechanics</h3>
+        <p style="margin-top:4px;"><strong class="t-teal">Same start:</strong> All players begin in the same sea, same position. No regional advantage.</p>
+        <p style="margin-top:4px;"><strong class="t-blue">Round 1 = build only:</strong> No attacking allowed. Forces everyone to invest before the PvP opens up.</p>
+        <p style="margin-top:4px;"><strong class="t-red">Island collision:</strong> If 2+ players go to the same island, they all fight. Loot is split by combat results.</p>
+        <p style="margin-top:4px;"><strong class="t-green">Ships never sink:</strong> Damaged ships lose stat effectiveness. Ship Builder repairs hull. No permanent elimination.</p>
+        <p style="margin-top:4px;"><strong class="t-amber">Food → morale:</strong> Low food = low morale = higher mutiny risk. A hidden variable that punishes players who ignore crew welfare.</p>
+      </div>
+      <div class="c">
+        <h3>Data-Driven Variables</h3>
+        <table class="var-table">
+          <tr><th>Variable</th><th>Type</th><th>Feeds Model</th></tr>
+          <tr><td>Crew count (by role)</td><td class="t-blue">Numerical</td><td>All 3</td></tr>
+          <tr><td>Crew stats (5 per member)</td><td class="t-blue">Numerical</td><td>Combat, Nav</td></tr>
+          <tr><td>Cannon tier + count</td><td class="t-red">Numerical</td><td>Combat</td></tr>
+          <tr><td>Sword tier</td><td class="t-red">Numerical</td><td>Combat</td></tr>
+          <tr><td>Compass tier</td><td class="t-pink">Numerical</td><td>Navigation</td></tr>
+          <tr><td>Maps tier</td><td class="t-pink">Numerical</td><td>Loot Discovery</td></tr>
+          <tr><td>Sails / Boat type</td><td class="t-pink">Categorical</td><td>Nav, Combat</td></tr>
+          <tr><td>Food level</td><td class="t-amber">Numerical</td><td>Morale modifier</td></tr>
+          <tr><td>Hull health</td><td class="t-green">Numerical</td><td>All 3 (penalty)</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 4: PIRATE — AI & SCORING -->
+<!-- ============================== -->
+<div class="slide" data-group="pirate">
+  <div class="slide-inner">
+    <div class="label t-gold">Pirate Battleship</div>
+    <h2>AI Curveballs, Scoring &amp; Learning</h2>
+
+    <div class="g3">
+      <div class="c"><div class="c-icon bg-amber">S</div><h3>Storm</h3><p>Extra nav check. Low compass/sailing master = lost turn. Weather-resistant builds buffered.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">K</div><h3>Kraken Attack</h3><p>Random ship hit. Combat Model determines damage. Weak ships lose crew. Rewards combat readiness.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">B</div><h3>Bounty on Leader</h3><p>AI fleet hunts #1 player. Leader must defend or lose 20% loot. Prevents runaway winners. Comeback mechanic.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">M</div><h3>Mutiny</h3><p>Triggered by low morale (low food, no doctor, overworked crew). Disables a random crew member for a round. Food investment prevents this.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">T</div><h3>Treasure Fleet</h3><p>High-value AI merchant appears. All players race to intercept. Best Nav + Combat combo wins the jackpot.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">F</div><h3>Fog of War</h3><p>Visibility drops. Ships without Explorers can't see islands or incoming attacks. Punishes unbalanced builds.</p><tag class="tag bg-amber">AI</tag></div>
+    </div>
+
+    <div class="g2">
+      <div class="c b-gold">
+        <h3 class="t-gold">Scoring</h3>
+        <p style="margin-top:4px;"><strong>Primary:</strong> Total loot held at end of final round.</p>
+        <p style="margin-top:4px;"><strong>Earning:</strong> Island exploration (PvE), raiding players (PvP), budgeting efficiency (loot spent on upgrades = loot not on leaderboard).</p>
+        <p style="margin-top:4px;"><strong>Anti-AFK:</strong> Must choose action every round. No "skip" option. Idle ships get random low-success routes. Crew wages deduct each round regardless.</p>
+      </div>
+      <div class="c b-teal">
+        <h3 class="t-teal">Learning Outcomes</h3>
+        <p style="margin-top:4px;"><strong>Multi-model reasoning:</strong> Optimizing for 1 model underperforms balanced builds across all 3.</p>
+        <p style="margin-top:4px;"><strong>Feature importance:</strong> Dataset reveals which crew roles/tech have highest coefficients. Feature interactions matter (Gunner without Powder Monkey = low DPS).</p>
+        <p style="margin-top:4px;"><strong>Risk vs. reward:</strong> 60% chance of stealing 500 loot vs. 90% chance of earning 250 from exploration — expected value thinking.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 5: RESTAURANT — OVERVIEW -->
+<!-- ============================== -->
+<div class="slide" data-group="restaurant">
+  <div class="slide-inner" style="position:relative;">
+    <div class="glow" style="background:radial-gradient(circle, rgba(232,89,60,0.25), transparent 70%);"></div>
+    <div class="label t-coral">Concept 2</div>
+    <h2>Restaurant Wars</h2>
+    <p class="subtitle">Run a competing bakery/restaurant. Allocate budget across design, menu, employees, technology, and ads. Regression model determines revenue. 30 players compete for the same customer base.</p>
+    <div class="g4">
+      <div class="c stat"><div class="num t-coral">30+</div><div class="slabel">Players</div></div>
+      <div class="c stat"><div class="num t-coral">~35</div><div class="slabel">Min to play</div></div>
+      <div class="c stat"><div class="num t-coral">X</div><div class="slabel">Rounds</div></div>
+      <div class="c stat"><div class="num t-coral">4</div><div class="slabel">Location zones</div></div>
+    </div>
+    <div class="g2">
+      <div class="c">
+        <div class="c-icon bg-coral">D</div>
+        <h3>Dataset-Driven</h3>
+        <p>Professor provides a restaurant dataset. Features: menu diversity, staff count, ambiance, equipment tier, marketing spend, pricing → resulting revenue and satisfaction. Players study this to understand which features drive customer traffic.</p>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-pink">M</div>
+        <h3>Predictive Model</h3>
+        <p>Regression model runs under the hood. Player decisions feed in as feature inputs. The model computes customer count, revenue, and satisfaction. Coefficients come from the dataset — studying data = competitive edge.</p>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="c">
+        <div class="c-icon bg-teal">C</div>
+        <h3>Zone Competition</h3>
+        <p>Players pick 1 of 4 zones (downtown, suburb, campus, mall). Each zone has different rent, foot traffic, and customer demographics. Multiple players in the same zone split customers based on attractiveness score.</p>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-amber">A</div>
+        <h3>Ad Auction</h3>
+        <p>Each night, sealed-bid auction for ad placements: Radio (most effective), Billboard, Bench Posters. 30 players bid blind — highest bids win. Overbidding hurts budget for staff and tech.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 6: RESTAURANT — FEATURES -->
+<!-- ============================== -->
+<div class="slide" data-group="restaurant">
+  <div class="slide-inner">
+    <div class="label t-coral">Restaurant Wars</div>
+    <h2>Features — Employees, Tech &amp; Design</h2>
+    <p class="subtitle">All features are adjustable each night during closing hours — including store design. Budget constraint forces tradeoffs across every category.</p>
+
+    <div class="section-divider"><span>Employees — Expanded Roles</span></div>
+    <div class="g4">
+      <div class="c">
+        <h3 class="t-teal">Chef / Baker</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Produces baked goods. More chefs = faster production = more items served per hour. Tiers: line cook → sous chef → head chef (output multiplier).</p>
+      </div>
+      <div class="c">
+        <h3 class="t-teal">Barista</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Produces drinks. Skilled baristas make specialty drinks faster. Tiers affect quality (satisfaction) and speed (throughput per hour).</p>
+      </div>
+      <div class="c">
+        <h3 class="t-teal">Cashier</h3>
+        <p style="font-size:11px;color:var(--text-muted);">1 per register. Checkout speed affects queue length. Long queues = customers leave. Upgradeable register system multiplies cashier speed.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-teal">Busser / Janitor</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Cleans tables for seating turnover. Dirty tables = lost seats. Also affects cleanliness score — low cleanliness triggers health inspector AI.</p>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="c">
+        <h3 class="t-teal">Host / Manager</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Manages seating flow and customer experience. Reduces wait times. Higher-tier hosts boost overall satisfaction rating by greeting and managing queues.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-teal">Delivery Driver</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Unlocks delivery revenue stream — customers who don't come in person. Requires investment in packaging. More drivers = more delivery capacity but diminishing returns.</p>
+      </div>
+    </div>
+
+    <div class="section-divider"><span>Technology — Tiered Upgrades</span></div>
+    <div class="g4">
+      <div class="c">
+        <h3 class="t-pink">Oven</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Tiers: basic → commercial → industrial. Affects bake speed and batch size. Cheaper ovens have higher breakdown risk (AI curveball).</p>
+      </div>
+      <div class="c">
+        <h3 class="t-pink">Register</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Tiers: manual → POS → self-checkout. Multiplies cashier checkout speed. Self-checkout = no cashier needed but expensive upfront.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-pink">Refrigerator</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Tiers by size: mini → standard → walk-in. Limits ingredient storage. Small fridge = can't stock enough for peak hours = lost sales.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-pink">Espresso Machine</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Tiers: manual → semi-auto → full-auto. Affects drink quality and barista speed. Full-auto = faster but less artisan (lower satisfaction for specialty drinks).</p>
+      </div>
+    </div>
+
+    <div class="section-divider"><span>Store Design — Adjustable</span></div>
+    <div class="c" style="border-color:rgba(123,97,255,0.2);">
+      <h3 class="t-purple">Redesignable Each Night</h3>
+      <p>Unlike the original concept, store design can now be changed during closing hours — at a cost. Options include: modern minimalist, cozy rustic, industrial loft, classic diner. Each design has a different ambiance score affecting the model's satisfaction output. Redesigning costs budget but lets players adapt if their current look isn't drawing the right customers.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 7: RESTAURANT — GAME LOOP -->
+<!-- ============================== -->
+<div class="slide" data-group="restaurant">
+  <div class="slide-inner">
+    <div class="label t-coral">Restaurant Wars</div>
+    <h2>Game Loop &amp; Menu System</h2>
+    <p class="subtitle">X rounds of play. Revenue tallied each round. Player with most cumulative revenue by the final round wins.</p>
+
+    <div class="loop">
+      <div class="loop-s" style="background:rgba(232,89,60,0.06);">
+        <div class="sn">STEP 1</div>
+        <div class="tm t-coral">3:00</div>
+        <h4>Daytime</h4>
+        <p>Restaurant open. Customers flow in. Observe real-time metrics. AI curveballs fire. Watch revenue tick.</p>
+      </div>
+      <div class="loop-s" style="background:rgba(123,97,255,0.06);">
+        <div class="sn">STEP 2</div>
+        <div class="tm t-purple">3:00</div>
+        <h4>Closing Hours</h4>
+        <p>Adjust everything: hire/fire staff, upgrade tech, change store design, expand menu, set hours.</p>
+      </div>
+      <div class="loop-s" style="background:rgba(245,166,35,0.06);">
+        <div class="sn">STEP 3</div>
+        <div class="tm t-amber">1:00</div>
+        <h4>Ad Auction</h4>
+        <p>Sealed bids on Radio, Billboard, Bench slots. 30 players bid blind. Winners revealed. Overbidding hurts budget.</p>
+      </div>
+      <div class="loop-s" style="background:rgba(45,212,168,0.06);">
+        <div class="sn">STEP 4</div>
+        <div class="tm t-teal">3:00</div>
+        <h4>Leaderboard</h4>
+        <p>Revenue tallied. Leaderboard updates. Analyze competitors. See zone density. Plan next day's strategy.</p>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="c">
+        <h3>Menu System</h3>
+        <p style="margin-top:4px;"><strong class="t-teal">Drinks:</strong> Tea, coffee, matcha latte, fresh juice, chai, smoothie. Each has cost, price, and satisfaction score.</p>
+        <p style="margin-top:4px;"><strong class="t-amber">Sweet baked:</strong> Croissant, cookie, cinnamon roll, baguette, muffin, brownie. Different production time and margins.</p>
+        <p style="margin-top:4px;"><strong class="t-coral">Savory baked:</strong> Egg bite, bagel, breakfast sandwich, savory scone, quiche, wrap. Higher price but need more chef time.</p>
+        <p style="margin-top:4px;">Menu can be expanded each night. More variety = more customer types attracted but higher ingredient costs and staff requirements.</p>
+      </div>
+      <div class="c">
+        <h3>Budget Features</h3>
+        <p style="margin-top:4px;"><strong class="t-teal">Store hours:</strong> Each hour has a flat-rate operating tax. Diminishing returns late night.</p>
+        <p style="margin-top:4px;"><strong class="t-purple">Seating:</strong> More tables = less wait time = more revenue. But tables need bussers for turnover.</p>
+        <p style="margin-top:4px;"><strong class="t-amber">Advertisements:</strong> Channel spend + auction bids. More ads = more foot traffic but costs stack up.</p>
+        <p style="margin-top:4px;"><strong class="t-coral">Anti-AFK:</strong> Rent + staff wages + hourly tax paid every day whether you optimize or not. AFK players bleed cash fast.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 8: RESTAURANT — AI & SCORING -->
+<!-- ============================== -->
+<div class="slide" data-group="restaurant">
+  <div class="slide-inner">
+    <div class="label t-coral">Restaurant Wars</div>
+    <h2>AI Curveballs, Scoring &amp; Learning</h2>
+
+    <div class="g3">
+      <div class="c"><div class="c-icon bg-amber">H</div><h3>Health Inspector</h3><p>Low busser count → violation → 50% seating shut down. Invest in janitors or pay the price.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">S</div><h3>Supply Disruption</h3><p>Ingredient shortage (flour, dairy, coffee). Heavy reliance on one category = menu items unavailable. Diversified menus absorb it.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">V</div><h3>Viral Food Trend</h3><p>Random item category surges (matcha goes viral). Players with it get customer boost. Players without miss out entirely.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">C</div><h3>Competitor Opens</h3><p>AI restaurant pops up in your zone — siphons foot traffic. Strong brand/ad players lose fewer customers.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">E</div><h3>Equipment Breakdown</h3><p>Oven or register goes down. Cheap equipment = higher failure rate. Premium tech is more reliable.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">W</div><h3>Weather Event</h3><p>Rain/heat reduces foot traffic. Players with stronger ads + brand awareness retain more customers.</p><tag class="tag bg-amber">AI</tag></div>
+    </div>
+
+    <div class="g2">
+      <div class="c b-coral">
+        <h3 class="t-coral">Scoring</h3>
+        <p style="margin-top:4px;"><strong>Primary:</strong> Cumulative net revenue across all rounds.</p>
+        <p style="margin-top:4px;"><strong>Secondary:</strong> Customer count, satisfaction avg, cleanliness score.</p>
+        <p style="margin-top:4px;"><strong>Zone competition:</strong> 4 zones, 30 players. Downtown = high traffic but 10+ competitors. Suburb = low traffic but fewer rivals. Attractiveness score (menu + price + ambiance + cleanliness + ads) determines your share of zone customers.</p>
+      </div>
+      <div class="c b-teal">
+        <h3 class="t-teal">Learning Outcomes</h3>
+        <p style="margin-top:4px;"><strong>Predictive modeling:</strong> Which features drive revenue? Model coefficients become intuitive through play.</p>
+        <p style="margin-top:4px;"><strong>Resource optimization:</strong> Budget tradeoffs force concentration on high-coefficient features.</p>
+        <p style="margin-top:4px;"><strong>Competitive strategy:</strong> Zone-based competition teaches market positioning. If everyone in Downtown buys ads, marginal return per dollar drops.</p>
+        <p style="margin-top:4px;"><strong>Risk management:</strong> Diversified menus, adequate staffing, and premium tech hedge against curveballs.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 9: FESTIVAL — OVERVIEW -->
+<!-- ============================== -->
+<div class="slide" data-group="festival">
+  <div class="slide-inner" style="position:relative;">
+    <div class="glow" style="background:radial-gradient(circle, rgba(245,166,35,0.25), transparent 70%);"></div>
+    <div class="label t-amber">Concept 3</div>
+    <h2>Festival Frenzy</h2>
+    <p class="subtitle">Run a competing music festival. Pick individual artists, hire staff, choose vendors, price tickets. Regression model determines attendance and revenue. 30+ players fight for shared regional audiences.</p>
+    <div class="g4">
+      <div class="c stat"><div class="num t-amber">30+</div><div class="slabel">Players</div></div>
+      <div class="c stat"><div class="num t-amber">~35</div><div class="slabel">Min to play</div></div>
+      <div class="c stat"><div class="num t-amber">X</div><div class="slabel">Rounds</div></div>
+      <div class="c stat"><div class="num t-amber">20</div><div class="slabel">Market niches</div></div>
+    </div>
+    <div class="g2">
+      <div class="c">
+        <div class="c-icon bg-amber">D</div>
+        <h3>Dataset-Driven</h3>
+        <p>Professor provides a festival dataset with features: artist tier, genre, ticket price, marketing, venue type, vendor count, staffing levels → resulting attendance/revenue. Players study this to understand which features have the highest model coefficients.</p>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-pink">I</div>
+        <h3>Interaction Terms</h3>
+        <p>The model includes interaction terms — venue type × genre produces a multiplier effect. An outdoor field boosts EDM attendance more than country. Amphitheater × indie rock has a different coefficient. Players who discover these interactions from the data have a massive edge.</p>
+      </div>
+    </div>
+    <div class="interaction-callout" style="border-color:var(--amber);color:var(--amber);">
+      <strong>Key interaction term: venue × genre</strong>
+      <p style="color:var(--text-muted);">Outdoor Field × EDM = high multiplier. Warehouse × Indie = high multiplier. Amphitheater × Pop = moderate. The "best venue" depends entirely on your genre pick. Studying the dataset reveals these combos.</p>
+      <div class="formula">attendance = β₁(venue) + β₂(genre) + β₃(venue × genre) + ...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 10: FESTIVAL — ARTISTS & AUCTION -->
+<!-- ============================== -->
+<div class="slide" data-group="festival">
+  <div class="slide-inner">
+    <div class="label t-amber">Festival Frenzy</div>
+    <h2>Lineup — Artist Tiers &amp; Auction</h2>
+    <p class="subtitle">Players pick individual artists from a roster, labeled by tier. A-tier headliners are auctioned off — highest bidder gets them. B and C tier are first-come or unlimited.</p>
+
+    <div class="g3">
+      <div class="c" style="border-color:rgba(245,166,35,0.3);">
+        <h3 class="t-amber">A-Tier Headliners</h3>
+        <p>Limited supply — 5-8 A-tier artists available per weekend. Players bid in sealed auction to secure them. Highest bid wins. Massive draw but expensive. If your A-tier cancels (AI curveball), you're devastated.</p>
+        <tag class="tag bg-amber">Auctioned</tag>
+      </div>
+      <div class="c" style="border-color:rgba(91,141,239,0.2);">
+        <h3 class="t-blue">B-Tier Artists</h3>
+        <p>Moderate supply — 15-20 available. First-come allocation (faster planners get first pick). Good draw at lower cost. Less risk if one cancels. Solid ROI for budget-conscious players.</p>
+        <tag class="tag bg-blue">First-come</tag>
+      </div>
+      <div class="c" style="border-color:rgba(45,212,168,0.2);">
+        <h3 class="t-teal">C-Tier / Local Acts</h3>
+        <p>Unlimited supply. Low cost, low draw, but fills out lineup depth. More acts = higher genre diversity score in the model. Quantity play for players who spent their budget elsewhere.</p>
+        <tag class="tag bg-teal">Unlimited</tag>
+      </div>
+    </div>
+
+    <div class="interaction-callout" style="border-color:var(--pink);color:var(--pink);">
+      <strong>Artist satisfaction — interaction term with cancellation risk</strong>
+      <p style="color:var(--text-muted);">Each artist has a satisfaction variable that tracks how well they were treated (pay, amenities backstage, crowd size). Higher artist satisfaction = more likely to return in future weekends AND lower cancellation risk. Low satisfaction = higher chance the AI cancellation curveball targets them.</p>
+      <div class="formula">cancel_prob = base_rate × (1 - artist_satisfaction) → high sat = low cancel risk</div>
+    </div>
+
+    <div class="section-divider"><span>Setup Decisions — Locked</span></div>
+    <div class="g3">
+      <div class="c">
+        <div class="c-icon bg-purple">G</div>
+        <h3>Genre (1 of 5)</h3>
+        <p>EDM, Hip-Hop, Indie, Pop, Country. Determines audience segment. Same genre = split demand. Interacts with venue type.</p>
+        <tag class="tag bg-purple">Locked</tag>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-purple">R</div>
+        <h3>Region (1 of 4)</h3>
+        <p>West, Midwest, South, East. Combined with genre = competitive niche. 5 genres × 4 regions = 20 niches for 30 players.</p>
+        <tag class="tag bg-purple">Locked</tag>
+      </div>
+      <div class="c">
+        <div class="c-icon bg-purple">V</div>
+        <h3>Venue Type</h3>
+        <p>Outdoor field, amphitheater, warehouse. Interacts with genre in the model. Outdoor × EDM ≠ Outdoor × Country. Data reveals which combos work.</p>
+        <tag class="tag bg-purple">Locked</tag>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 11: FESTIVAL — FEATURES -->
+<!-- ============================== -->
+<div class="slide" data-group="festival">
+  <div class="slide-inner">
+    <div class="label t-amber">Festival Frenzy</div>
+    <h2>Features — Vendors, Staffing &amp; Security</h2>
+    <p class="subtitle">Expanded vendor types, staff roles with numerical counts, and security mechanics that directly affect revenue through sneaking prevention.</p>
+
+    <div class="section-divider"><span>Food &amp; Drink Vendors — Expanded</span></div>
+    <div class="g4">
+      <div class="c">
+        <h3 class="t-amber">Hot Dog Stand</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Low cost, high volume. Appeals to budget attendees. Set the number of stands to scale revenue.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-amber">Craft Beer Tent</h3>
+        <p style="font-size:11px;color:var(--text-muted);">High margin, moderate volume. Boosts satisfaction. Pairs well with certain genres (indie, country).</p>
+      </div>
+      <div class="c">
+        <h3 class="t-amber">Gourmet Food Truck</h3>
+        <p style="font-size:11px;color:var(--text-muted);">High cost, high satisfaction. Premium per-attendee revenue. Limited capacity per truck — number matters.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-amber">Water / Juice Bar</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Low margin but boosts safety/satisfaction. Required for outdoor venues in hot weather curveball.</p>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text-dim);margin:-8px 0 20px;"><strong>Vendor staff:</strong> The more vendor staff you hire, the more you can yield from each vendor. Understaffed vendors = long lines = lost sales. Each vendor type has a staff-to-yield ratio.</p>
+
+    <div class="section-divider"><span>Staffing — Number of Each Role</span></div>
+    <div class="g4">
+      <div class="c">
+        <h3 class="t-teal">Security</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Prevents people from sneaking in — every person who sneaks in is missed ticket revenue. More security = fewer gate crashers = more revenue captured. Required minimum, but optimal is higher.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-teal">Janitors</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Directly increases attendee satisfaction score. Clean grounds = happier fans = higher satisfaction = loyalty bonus for repeat weekends. Underspending here tanks your satisfaction.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-teal">Medics</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Required minimum. More medics = fewer incident penalties. Incidents reduce satisfaction and can trigger bad press curveball.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-teal">Stage Crew</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Affects show quality. Understaffed stage crew = sound issues = lower artist satisfaction = higher cancellation risk next weekend.</p>
+      </div>
+    </div>
+
+    <div class="section-divider"><span>Other Adjustables</span></div>
+    <div class="g3">
+      <div class="c">
+        <h3 class="t-teal">Ticket Pricing</h3>
+        <p style="font-size:11px;color:var(--text-muted);">Set GA and VIP prices. Elasticity from dataset — too high = low attendance, too low = leaving money on the table. Sweet spot depends on lineup and competition.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-teal">Amenities</h3>
+        <p style="font-size:11px;color:var(--text-muted);">VIP lounges, art installations, phone charging, merch booths. Each has cost + satisfaction multiplier. High satisfaction = repeat attendance bonus in later rounds.</p>
+      </div>
+      <div class="c">
+        <h3 class="t-teal">Advertisements</h3>
+        <p style="font-size:11px;color:var(--text-muted);">More ad spend = more viral moment probability. Ads directly feed the viral moment curveball — higher ad investment = higher chance of getting the positive viral boost.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 12: FESTIVAL — AI & SCORING -->
+<!-- ============================== -->
+<div class="slide" data-group="festival">
+  <div class="slide-inner">
+    <div class="label t-amber">Festival Frenzy</div>
+    <h2>AI Curveballs, Scoring &amp; Learning</h2>
+
+    <div class="g3">
+      <div class="c"><div class="c-icon bg-amber">W</div><h3>Weather</h3><p>Rain drops outdoor attendance. Amphitheater buffered. Warehouse unaffected. Region-specific. Water/juice bar vendors help satisfaction during heat.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">X</div><h3>Artist Cancellation</h3><p>Probability linked to artist satisfaction (interaction term). Low stage crew + low pay = higher cancel risk. Diversified lineups absorb it. A-tier loss is devastating.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">V</div><h3>Viral Moment</h3><p>Probability linked to ad spend. More advertisements = higher chance of getting the positive viral boost. Can also go negative (bad press) — linked to low satisfaction score.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">B</div><h3>Bad Press</h3><p>Triggered by low satisfaction (dirty grounds, incidents, poor sound). Linked to janitor + medic investment. Higher satisfaction = lower bad press probability.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">R</div><h3>Competitor Surge</h3><p>AI festival enters your region in later rounds. Siphons base demand. Forces adaptation — can't repeat same strategy.</p><tag class="tag bg-amber">AI</tag></div>
+      <div class="c"><div class="c-icon bg-amber">S</div><h3>Security Breach</h3><p>Gate crashers detected. Revenue loss = tickets not collected. More security staff = fewer breaches = more revenue captured. Under-secured festivals hemorrhage money.</p><tag class="tag bg-amber">AI</tag></div>
+    </div>
+
+    <div class="g2">
+      <div class="c b-amber">
+        <h3 class="t-amber">Scoring</h3>
+        <p style="margin-top:4px;"><strong>Primary:</strong> Cumulative net revenue across all rounds.</p>
+        <p style="margin-top:4px;"><strong>Audience splitting:</strong> Same region + genre = split demand. Attractiveness score determines your share. 6 EDM/West players = each gets ~1/6 base.</p>
+        <p style="margin-top:4px;"><strong>Anti-AFK:</strong> Venue lease + min staff costs paid every weekend. Idle players bleed. Can't profit without active decisions.</p>
+      </div>
+      <div class="c b-teal">
+        <h3 class="t-teal">Learning Outcomes</h3>
+        <p style="margin-top:4px;"><strong>Interaction terms:</strong> Venue × genre teaches that features don't act in isolation — combinations matter.</p>
+        <p style="margin-top:4px;"><strong>Linked curveballs:</strong> Artist cancellation ↔ satisfaction, viral ↔ ads, bad press ↔ cleanliness. Students learn that variables connect to each other, not just to the outcome.</p>
+        <p style="margin-top:4px;"><strong>Competitive positioning:</strong> Audience splitting teaches market strategy. Reading the room at setup is as important as optimizing numbers.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SLIDE 13: COMPARISON -->
+<!-- ============================== -->
+<div class="slide" data-group="title">
+  <div class="slide-inner">
+    <div class="label t-gold">Summary</div>
+    <h2>Side-by-Side Comparison</h2>
+    <p class="subtitle">All three concepts share the same core framework: dataset → predictive model → competitive decisions → AI curveballs → leaderboard. The theme is the wrapper.</p>
+
+    <table class="var-table" style="margin-bottom:24px;">
+      <tr><th></th><th class="t-gold">Pirate Battleship</th><th class="t-coral">Restaurant Wars</th><th class="t-amber">Festival Frenzy</th></tr>
+      <tr><td>Players</td><td>30+</td><td>30+</td><td>30+</td></tr>
+      <tr><td>Play time</td><td>~35 min</td><td>~35 min</td><td>~35 min</td></tr>
+      <tr><td>Rounds</td><td>X rounds</td><td>X rounds</td><td>X rounds</td></tr>
+      <tr><td>Models</td><td>3 (combat, nav, loot)</td><td>1 (revenue)</td><td>1 (attendance/rev)</td></tr>
+      <tr><td>Competition</td><td>PvE + PvP raids</td><td>Zone-based customers</td><td>Audience splitting</td></tr>
+      <tr><td>Auction mechanic</td><td>None (direct PvP)</td><td>Ad slot auction</td><td>Artist + ad auction</td></tr>
+      <tr><td>Key interaction</td><td>Crew role combos</td><td>Staff × tech</td><td>Venue × genre</td></tr>
+      <tr><td>AI curveballs</td><td>6 types</td><td>6 types</td><td>6 types</td></tr>
+      <tr><td>Anti-AFK</td><td>Must choose action</td><td>Round costs bleed</td><td>Round costs bleed</td></tr>
+      <tr><td>Vibe</td><td>Adventure / combat</td><td>Business sim</td><td>Entertainment mgmt</td></tr>
+    </table>
+
+    <div class="g3">
+      <div class="c b-gold" style="text-align:center;">
+        <h3 class="t-gold">Pirate Battleship</h3>
+        <p>Best for: multi-model reasoning, PvP risk/reward, resource allocation across 3 simultaneous objectives.</p>
+      </div>
+      <div class="c b-coral" style="text-align:center;">
+        <h3 class="t-coral">Restaurant Wars</h3>
+        <p>Best for: budget optimization, zone-based competition, relatable business context. Most accessible to non-technical students.</p>
+      </div>
+      <div class="c b-amber" style="text-align:center;">
+        <h3 class="t-amber">Festival Frenzy</h3>
+        <p>Best for: interaction terms, auction mechanics, linked curveball variables. Most game-theory depth.</p>
+      </div>
+    </div>
+
+    <div class="key" style="background:var(--surface);border:1px solid var(--border);">
+      <strong>All 3:</strong> Browser-based, real-time WebSocket sync, server-side regression (scikit-learn), professor-provided dataset, 10-min post-game debrief on model coefficients.
+    </div>
+  </div>
+</div>
+
+</div><!-- end slides-container -->
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dots = document.getElementById('dots');
+const counter = document.getElementById('counter');
+let cur = 0;
+
+slides.forEach((s, i) => {
+  const d = document.createElement('div');
+  d.className = 'nav-dot';
+  const g = s.dataset.group;
+  if (g === 'pirate') d.classList.add('pirate');
+  if (g === 'restaurant') d.classList.add('restaurant');
+  if (g === 'festival') d.classList.add('festival');
+  d.onclick = () => goTo(i);
+  dots.appendChild(d);
+});
+
+function goTo(n) {
+  if (n < 0 || n >= slides.length) return;
+  slides[cur].classList.remove('active');
+  slides[cur].style.transform = n > cur ? 'translateX(-60px)' : 'translateX(60px)';
+  cur = n;
+  slides[cur].classList.add('active');
+  slides[cur].scrollTop = 0;
+  counter.textContent = (cur + 1) + ' / ' + slides.length;
+  document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === slides.length - 1;
+  const g = slides[cur].dataset.group;
+  const badge = document.querySelector('.nav-badge');
+}
+function go(dir) { goTo(cur + dir); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+});
+
+let touchX = 0;
+document.addEventListener('touchstart', e => touchX = e.touches[0].clientX);
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+});
+
+goTo(0);
+</script>
+
+</body>
+</html>
