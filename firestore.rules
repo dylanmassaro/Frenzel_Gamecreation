@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Phase 0 placeholder rules.
+// Locked down by default; will be expanded as we add features.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // No reads or writes yet — we'll open specific paths as we build.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
