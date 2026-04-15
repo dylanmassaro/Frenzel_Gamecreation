@@ -1,0 +1,40 @@
+# Deps
+node_modules
+.pnp
+.pnp.js
+
+# Build
+dist
+dist-ssr
+*.local
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Firebase
+.firebase
+firebase-debug.log
+functions/lib
+functions/node_modules
+
+# Python
+__pycache__
+*.pyc
+.venv
+venv/
+
+# Claude / local
+.claude/settings.local.json

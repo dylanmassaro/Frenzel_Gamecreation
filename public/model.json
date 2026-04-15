@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "generated_at": "2026-04-15T17:04:18.007471+00:00",
+  "source": "synthetic (scripts/generate_dataset.py)",
+  "n_rows": 500,
+  "feature_names": [
+    "avg_price",
+    "menu_item_count",
+    "baker_count",
+    "cashier_count",
+    "manager_count",
+    "baker_tier_max",
+    "avg_emp_pay",
+    "ad_slots_won",
+    "oven_tier",
+    "register_tier",
+    "fridge_tier",
+    "espresso_tier",
+    "competitor_count",
+    "store_design_modern",
+    "store_design_cozy",
+    "store_design_industrial"
+  ],
+  "coefficients": [
+    82.65215705830495,
+    146.01321074789328,
+    325.2824411807362,
+    187.64435358507055,
+    299.82873842886005,
+    407.90226357260985,
+    5.628809193443689,
+    376.4352188710041,
+    261.31620230884715,
+    125.96355528515997,
+    112.2869234659251,
+    263.3998369013762,
+    -94.08655224421734,
+    175.4262411260087,
+    248.32582243659473,
+    104.52686318878328
+  ],
+  "intercept": 920.9039725971161,
+  "r2": 0.941303869776092,
+  "categorical": {
+    "field": "store_design",
+    "baseline": "classic",
+    "levels": [
+      "modern",
+      "cozy",
+      "industrial"
+    ]
+  },
+  "notes": "Placeholder model on synthetic data. Replace with coefficients from Prof. Frenzel's real dataset for classroom play."
+}
